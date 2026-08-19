@@ -1,4 +1,4 @@
-# 👋 안녕하세요! 반도체 설계(Fabless) 엔지니어 [이름]입니다.
+# 👋 안녕하세요! 임베디드 소프트웨어 엔지니어 [김도훈]입니다.
 
 [![Email](https://img.shields.io/badge/Email-D14836?style=flat-square&logo=Gmail&logoColor=white)](mailto:kimdouhoon98@gmail.com)
 
