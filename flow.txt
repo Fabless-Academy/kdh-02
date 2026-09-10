@@ -1,0 +1,36 @@
+main()
+  │
+  ├─ 인자 파싱 (-f fullscreen, -o opaque, -h help)
+  ├─ signal 핸들러 등록 (SIGINT → signal_int)
+  ├─ 구조체 초기화 (display, window, v4l2_config memset)
+  │
+  ├─ set_v4l2_config()          ← V4L2 설정값 세팅
+  ├─ nc_init_path_localizer()
+  ├─ set_viewport_config()
+  │
+  ├─ nc_wayland_display_init()  ← Wayland 연결 + EGL 초기화
+  │     (내부에서 wl_display_connect, init_egl, create_surface)
+  │     render 콜백 함수 포인터도 여기서 등록됨
+  │
+  ├─ v4l2_initialize()          ← 카메라(V4L2) 실제 초기화
+  ├─ gl_initialize()            ← OpenGL ES 셰이더/텍스처 초기화
+  ├─ nc_ocl_init()              ← OpenCL 초기화
+  │
+  ├─ nc_tsfs_ff_create_buffers() ← 채널별 flip-flop 버퍼 생성
+  ├─ mq_unlink(MQ_NAME_CNN_BUF)
+  ├─ npu_init()                 ← NPU 초기화
+  │
+  ├─ pthread_create → cnn_task            ← NPU 추론 스레드
+  ├─ pthread_create → nc_cnn_postprocess_task  ← 후처리 스레드
+  │
+  ├─ while(running) wl_display_dispatch() ← Wayland 이벤트 루프
+  │     └─ 매 프레임마다 render() 콜백 호출
+  │           ├─ V4L2 dequeue/queue (카메라 프레임 가져오기)
+  │           ├─ glTexImage2D (텍스처 업로드)
+  │           ├─ NPU 결과 오버레이 그리기
+  │           └─ nc_wayland_display_draw() → eglSwapBuffers
+  │
+  └─ cleanup
+        ├─ pthread_join (스레드 종료 대기)
+        ├─ nc_ocl_deinit()
+        └─ nc_wayland_display_destroy()
