@@ -218,23 +218,38 @@ Day 1에는 변경하지 않는다.
 전체 실행 흐름을 추적한다.
 
 ```text
-main
+Camera
  ↓
-camera init
+v4l2_initialize()
  ↓
-V4L2
+v4l2_task()
  ↓
-thread create
+nc_v4l2_dequeue_buffer()
  ↓
-render
+send_cnn_buf()
  ↓
-NPU
+cnn_task()
  ↓
-post-process
+nc_aiw_run_cnn()
+ ↓
+run_cnn_program()
+ ↓
+aiwProgramExecute()
+ ↓
+nc_cnn_postprocess_task()
+ ↓
+nc_postprocess_trichimera_inference_result()
+ ├─ Detection
+ ├─ Freespace
+ └─ Lane
+ ↓
+flip-flop buffer
+ ↓
+render()
+ ↓
+nc_draw_gl_npu()
  ↓
 Wayland
- ↓
-cleanup
 ```
 
 그리고 thread 관련 코드 검색:
